@@ -1,0 +1,98 @@
+<!-- ====================================================================== -->
+<!-- Ant build files for the I3 capturador de huellas                              -->
+<!-- Please download and install ant from http://ant.apache.org/            -->
+<!-- ====================================================================== -->
+
+<project name="i3appletc" default="jar">
+
+  <!-- Replace this with classic/modern/jikes as you like -->
+  <property name="build.compiler" value="modern"/>
+
+  <property name="src"     value="."/>
+  <property name="build"   value="build"/>
+  <property name="ebuild"   value="ebuild"/>
+  <property name="dist"    value="dist"/>
+  <property name="docs"    value="docs/api"/>
+
+
+	<fileset dir="$src">
+	 <include name="**/*.jar" />
+	 </fileset>
+
+<!-- ====================================================================== -->
+
+  <target name="init">
+    <tstamp/>
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${build}"/>
+    <mkdir dir="${ebuild}"/>
+    <mkdir dir="${dist}"/>
+  </target>
+
+<!-- ====================================================================== -->
+
+  <target name="compile" depends="init">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <depend srcdir="${src}" destdir="${build}" closure="yes"/>
+    <javac srcdir="${src}" destdir="${build}" debug="on" target="1.1" />
+    
+  </target>
+
+<!-- ====================================================================== -->
+
+  <target name="jar" depends="compile">
+    <jar jarfile="i3cap.jar" basedir="${build}" />
+    <jar jarfile="i3cap-full.jar">
+      <fileset dir="${build}" />
+      <fileset dir="${ebuild}" />
+    	<manifest>
+    	<attribute name="Main-Class" value="com.test.quientienemal.gr.FormMain" />
+    	
+    	</manifest> 
+    </jar>
+  </target>
+
+<!-- ====================================================================== -->
+
+ <target name="dist" depends="jar"> 
+   <mkdir dir="${dist}/src"/>
+   <copy todir="${dist}/src">
+     <fileset dir="." includes="build.xml,*.html,*.txt"/>
+   </copy>
+   <copy todir="${dist}/src/${src}">
+     <fileset dir="${src}"/>
+   </copy>
+   
+   <mkdir dir="${dist}/bin"/>
+   <copy todir="${dist}/bin">
+     <fileset dir="." 
+	      includes="*.jar,*.txt,*.html"/>
+   </copy>
+   <copy todir="${dist}/bin/example">
+     <fileset dir="example"/>
+   </copy>
+  </target>
+
+<!-- ====================================================================== -->
+
+  <target name="clean">
+    <delete dir="${build}"/>
+    <delete dir="${ebuild}"/>
+    <delete dir="${dist}"/>
+    <delete dir="${docs}"/>
+  </target>
+
+
+  <target name="cleancompile" depends="clean,compile"/>
+  <target name="cleanjar" depends="clean,jar"/>
+  <target name="cleandist" depends="clean,dist"/>
+</project>
+
+
+
+
+
+
+
+
+
