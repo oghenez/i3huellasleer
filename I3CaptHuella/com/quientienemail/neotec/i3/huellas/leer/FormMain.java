@@ -44,8 +44,14 @@ import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ItemEvent;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Iterator;
 import java.util.Locale;
 
@@ -74,7 +80,6 @@ import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 
 import com.griaule.grfingerjava.GrFingerJava;
-
 
 
 
@@ -613,7 +618,84 @@ public class FormMain extends JApplet {
 			btTerminar.setText("Finalizar Captura");
 			btTerminar.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					jTextArea.setText("");
+					try
+					{
+//					------------------------------------------------------------------------
+//					 make sure that a true HTTP connection had been established with the
+//					 target servlet. If so, set the request method to HTTP POST, as an
+//					 an undetermined number of raw bytes will be sent to the target servlet.
+//					------------------------------------------------------------------------
+					URL url = new URL(util.idUrl);
+					
+					
+					URLConnection urlConnection = url.openConnection();
+					if (urlConnection instanceof HttpURLConnection)
+					{
+					((HttpURLConnection)urlConnection).setRequestMethod("POST");
+					}
+					else
+					{
+					throw new Exception("this connection is NOT an HttpUrlConnection connection");
+					}
+
+//					------------------------------------------------------------------------
+//					 configure the connection to allow for the operations necessary.
+//					 Specifically:
+					//
+//					 1. Turn off all caching, so that each new request/response is made
+//					 from a fresh connection with the servlet.
+					//
+//					 2. Indicated that this client will attempt to SEND request
+//					 data to the servlet.
+					//
+//					 3. Indicated that this client will attempt to READ any response
+//					 data sent back from the servlet.
+					//
+//					 4. Set the "mimetype" to indicate that byte data will be sent.
+					//
+//					------------------------------------------------------------------------
+					urlConnection.setUseCaches(false);
+					urlConnection.setDefaultUseCaches(false);
+					urlConnection.setDoInput(true);
+					urlConnection.setDoOutput(true);
+					urlConnection.setRequestProperty("Content-Type", "application/octet-stream");
+
+//					----------------------------------------------------------------------
+//					 connect to the servlet
+//					----------------------------------------------------------------------
+					urlConnection.connect();
+
+//					----------------------------------------------------------------------
+//					 send data to servlet
+//					----------------------------------------------------------------------
+					OutputStream os = urlConnection.getOutputStream();
+					//aqui os.write(/* FILL_IN_WITH_VALUE (source of bytes) */);
+					os.flush();
+					os.close();
+
+//					----------------------------------------------------------------------
+//					 read any response data, and store in a ByteArrayOutputStream
+//					----------------------------------------------------------------------
+					ByteArrayOutputStream baos = null;
+					InputStream is = null;
+					if ((is = urlConnection.getInputStream())!=null)
+					{
+					baos = new ByteArrayOutputStream();
+					byte ba [] = new byte[1];
+					while ((is.read(ba,0,1)) != (-1))
+					{
+					baos.write(ba,0,1);
+					}
+					baos.flush();
+					is.close();
+					}
+					}
+					catch (Exception e1)
+					{
+				    writeLog("Error! No se envió nada al servidor:");
+					writeLog(e1.getMessage());	
+					e1.printStackTrace();
+					}
 				}
 			});
 		}
@@ -792,7 +874,7 @@ public class FormMain extends JApplet {
 	}
 
 	public String getAppletInfo() {
-		return "GrFinger Java Applet Sample";
+		return "I3 Fingerprints digitizing applet";
 	}
 
 } // @jve:decl-index=0:visual-constraint="236,-58"
