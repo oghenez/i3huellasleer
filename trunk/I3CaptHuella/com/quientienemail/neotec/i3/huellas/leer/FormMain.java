@@ -113,6 +113,8 @@ public class FormMain extends JApplet {
 	private JButton jButton4 = null;
 
 	private JButton jButton5 = null;
+	
+	private JButton btTerminar = null;
 
 	private JCheckBox jCheckBox = null;
 
@@ -452,6 +454,7 @@ public class FormMain extends JApplet {
 			jPanel1.add(new JLabel());
 			jPanel1.add(getJButton4(), null);
 			jPanel1.add(getJButton5(), null);
+			jPanel1.add(btTerminar(), null);
 			jPanel1.add(getJCheckBox(), null);
 			jPanel1.add(getJCheckBox1(), null);
 		}
@@ -602,6 +605,21 @@ public class FormMain extends JApplet {
 		}
 		return jButton5;
 	}
+	
+	
+	private JButton btTerminar() {
+		if (btTerminar == null) {
+			btTerminar = new JButton();
+			btTerminar.setText("Finalizar Captura");
+			btTerminar.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					jTextArea.setText("");
+				}
+			});
+		}
+		return btTerminar;
+	}
+	
 
 	/**
 	 * This method initializes jCheckBox
