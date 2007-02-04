@@ -83,6 +83,10 @@ public class Util implements IStatusEventListener, IImageEventListener,
 	private Vector templateVector;
 
 	private boolean captureInitalized = false;
+	
+	public String idAsociado = "";
+	
+	public String idUrl = "";
 
 	public Util(FormMain ui) {
 		this.ui = ui;
@@ -99,13 +103,15 @@ public class Util implements IStatusEventListener, IImageEventListener,
 			URL filesDirectory = new URL(ui.getParameter("filesDirectory"));
 			installer.install(filesDirectory, true, true);
 			
-			String idAsociado = "";
+			
 			idAsociado = ui.getParameter("idAsociado");
 ;
+		
+			idUrl = ui.getParameter("idUrl");
 			
-			if (idAsociado == null) {
+			if ((idAsociado == null) || (idUrl == null))  {
 				captureInitalized = false;
-			    ui.writeLog("ERROR:No se envió idAsociado");
+			    ui.writeLog("ERROR:No se envió idAsociado/idUrl");
 			} else {
 				// Creates a match context to perform fingerprint minutiae
 				// extraction and match.
