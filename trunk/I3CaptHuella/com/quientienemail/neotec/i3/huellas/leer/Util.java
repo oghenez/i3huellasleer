@@ -80,7 +80,7 @@ public class Util implements IStatusEventListener, IImageEventListener,
 
 	private Template template; // The last extracted template
 
-	private Vector templateVector;
+	public Vector templateVector;
 
 	private boolean captureInitalized = false;
 	
@@ -180,6 +180,8 @@ public class Util implements IStatusEventListener, IImageEventListener,
 		// Signaling that an Image Event occurred.
 		ui.writeLog("Sensor: " + idSensor + ". Event: Image Captured.");
 		processImage(fingerprint);
+		enroll();
+		
 
 	}
 

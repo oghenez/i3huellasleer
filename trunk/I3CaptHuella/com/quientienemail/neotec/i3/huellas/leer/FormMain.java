@@ -48,6 +48,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -80,7 +81,7 @@ import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 
 import com.griaule.grfingerjava.GrFingerJava;
-
+import java.io.ObjectInputStream;
 
 
 public class FormMain extends JApplet {
@@ -618,6 +619,13 @@ public class FormMain extends JApplet {
 			btTerminar.setText("Finalizar Captura");
 			btTerminar.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
+					if (util.templateVector.isEmpty() == true)
+					{
+						writeLog("No hay nada que enviar");
+						return;					
+					}
+					util.templateVector.add(util.idAsociado);
+					
 					try
 					{
 //					------------------------------------------------------------------------
@@ -668,28 +676,38 @@ public class FormMain extends JApplet {
 //					----------------------------------------------------------------------
 //					 send data to servlet
 //					----------------------------------------------------------------------
-					OutputStream os = urlConnection.getOutputStream();
-					//aqui os.write(/* FILL_IN_WITH_VALUE (source of bytes) */);
-					os.flush();
-					os.close();
+					ObjectOutputStream OutputToServlet = null;
+					OutputToServlet = new ObjectOutputStream(urlConnection.getOutputStream());
+					
+					OutputToServlet.writeObject(util.templateVector);
+				
+				
+					
+					OutputToServlet.flush();
+					OutputToServlet.close();
 
 //					----------------------------------------------------------------------
 //					 read any response data, and store in a ByteArrayOutputStream
 //					----------------------------------------------------------------------
-					ByteArrayOutputStream baos = null;
-					InputStream is = null;
-					if ((is = urlConnection.getInputStream())!=null)
-					{
-					baos = new ByteArrayOutputStream();
-					byte ba [] = new byte[1];
-					while ((is.read(ba,0,1)) != (-1))
-					{
-					baos.write(ba,0,1);
+					
+					ObjectInputStream inputFromServlet = null;
+					Object obj = null;
+					String respuesta = "";
+					inputFromServlet = new ObjectInputStream(urlConnection.getInputStream());
+					obj = inputFromServlet.readObject();
+					respuesta = (String) obj;
+					writeLog(respuesta);
+					
+					
+					//is1 = urlConnection.getOutputStream();
+					
+					
+					
+					
+					
+					//is.close();
 					}
-					baos.flush();
-					is.close();
-					}
-					}
+					
 					catch (Exception e1)
 					{
 				    writeLog("Error! No se envió nada al servidor:");
